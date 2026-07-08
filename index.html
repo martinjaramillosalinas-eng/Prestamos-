@@ -11,19 +11,13 @@
 <!-- React y ReactDOM -->
 <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<!-- Babel: convierte el JSX en el navegador, sin necesidad de instalar nada -->
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <!-- Firebase (almacenamiento compartido gratis) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-<script type="text/babel" data-presets="react">
+<!-- Este código ya viene traducido de antemano (sin Babel en vivo) -->
+<script>
 const { useState, useEffect, useMemo, useCallback } = React;
-
-/* ============================================================
-   ICONOS
-   Reemplazo sencillo de los iconos (sin librerías externas)
-   ============================================================ */
 function crearIcono(emoji) {
   return function IconoBase({ size = 16, color, style }) {
     return React.createElement(
@@ -34,30 +28,23 @@ function crearIcono(emoji) {
   };
 }
 const Plus = crearIcono("+");
-const X = crearIcono("✕");
-const Check = crearIcono("✓");
-const CalendarIcon = crearIcono("📅");
-const AlertTriangle = crearIcono("⚠");
-const Search = crearIcono("🔍");
-const Pencil = crearIcono("✎");
-const Trash2 = crearIcono("🗑");
-const Wallet = crearIcono("💰");
-const ChevronLeft = crearIcono("◀");
-const ChevronRight = crearIcono("▶");
-const ClipboardList = crearIcono("📋");
-const Coins = crearIcono("🪙");
-const Bell = crearIcono("🔔");
+const X = crearIcono("\u2715");
+const Check = crearIcono("\u2713");
+const CalendarIcon = crearIcono("\u{1F4C5}");
+const AlertTriangle = crearIcono("\u26A0");
+const Search = crearIcono("\u{1F50D}");
+const Pencil = crearIcono("\u270E");
+const Trash2 = crearIcono("\u{1F5D1}");
+const Wallet = crearIcono("\u{1F4B0}");
+const ChevronLeft = crearIcono("\u25C0");
+const ChevronRight = crearIcono("\u25B6");
+const ClipboardList = crearIcono("\u{1F4CB}");
+const Coins = crearIcono("\u{1FA99}");
+const Bell = crearIcono("\u{1F514}");
 const Percent = crearIcono("%");
-const ShieldCheck = crearIcono("🛡");
-const Users = crearIcono("👥");
-const Lock = crearIcono("🔒");
-
-/* ============================================================
-   ALMACENAMIENTO COMPARTIDO (Firebase Firestore)
-   ------------------------------------------------------------
-   PON AQUÍ TU CONFIGURACIÓN DE FIREBASE
-   (la consigues gratis en https://console.firebase.google.com)
-   ============================================================ */
+const ShieldCheck = crearIcono("\u{1F6E1}");
+const Users = crearIcono("\u{1F465}");
+const Lock = crearIcono("\u{1F512}");
 const firebaseConfig = {
   apiKey: "AIzaSyBvH9H8Ye-_B_znfnrHUiy1Kcc-zORZwUg",
   authDomain: "agenda-c749f.firebaseapp.com",
@@ -66,12 +53,8 @@ const firebaseConfig = {
   messagingSenderId: "290704304596",
   appId: "1:290704304596:web:9fefee1e8a145e426f8e41"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
-
-// Imita la misma API que usaba el artifact de Claude (window.storage),
-// para no tener que tocar el resto del código de la aplicación.
 window.storage = {
   async get(key, shared) {
     if (!shared) {
@@ -90,124 +73,128 @@ window.storage = {
     }
     await db.collection("veta").doc(key).set({ value });
     return { key, value, shared: true };
-  },
+  }
 };
-
-// ---------- config ----------
 const DIAS_AVISO = 3;
-// Clave para aprobar el acceso de nuevas personas y gestionar solicitudes.
-// Cámbiala por la que quieras usar tú (edita este archivo cuando quieras rotarla).
 const CLAVE_ADMIN = "ORO2026";
-
 const BANCOS_CO = [
-  "Bancolombia", "Davivienda", "Banco de Bogotá", "BBVA Colombia",
-  "Banco de Occidente", "Banco Popular", "Banco Caja Social", "Banco Agrario",
-  "Banco AV Villas", "Scotiabank Colpatria", "Itaú", "Nequi", "Daviplata", "Otro",
+  "Bancolombia",
+  "Davivienda",
+  "Banco de Bogot\xE1",
+  "BBVA Colombia",
+  "Banco de Occidente",
+  "Banco Popular",
+  "Banco Caja Social",
+  "Banco Agrario",
+  "Banco AV Villas",
+  "Scotiabank Colpatria",
+  "Ita\xFA",
+  "Nequi",
+  "Daviplata",
+  "Otro"
 ];
-
-// ---------- utilidades ----------
-const fmtCOP = (n) =>
-  new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n || 0);
-
+const fmtCOP = (n) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(n || 0);
 const formatMiles = (raw) => String(raw || "").replace(/[^0-9]/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-
-const todayISO = () => new Date().toISOString().slice(0, 10);
-
+const todayISO = () => (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
 const daysUntil = (dateStr) => {
-  const d = new Date(dateStr + "T00:00:00");
-  const t = new Date(todayISO() + "T00:00:00");
-  return Math.round((d - t) / 86400000);
+  const d = /* @__PURE__ */ new Date(dateStr + "T00:00:00");
+  const t = /* @__PURE__ */ new Date(todayISO() + "T00:00:00");
+  return Math.round((d - t) / 864e5);
 };
-
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-
-const montoTotal = (d) => d.monto + (d.monto * (d.tasa || 0)) / 100;
+const montoTotal = (d) => d.monto + d.monto * (d.tasa || 0) / 100;
 const abonadoDe = (d) => (d.abonos || []).reduce((a, b) => a + b.valor, 0);
 const restanteDe = (d) => Math.max(montoTotal(d) - abonadoDe(d), 0);
-
 function estadoDeuda(deuda) {
   if (restanteDe(deuda) <= 0) return "pagado";
   const dias = daysUntil(deuda.fechaPago);
   if (dias <= DIAS_AVISO) return "proximo";
   return "vigente";
 }
-
 const ESTADO_INFO = {
-  proximo: { label: "Próximo a vencer", color: "#E08D3C", bg: "rgba(224,141,60,0.14)" },
+  proximo: { label: "Pr\xF3ximo a vencer", color: "#E08D3C", bg: "rgba(224,141,60,0.14)" },
   vigente: { label: "Vigente", color: "#7FA37A", bg: "rgba(127,163,122,0.12)" },
-  pagado: { label: "Pagado", color: "#6B8F5D", bg: "rgba(107,143,93,0.14)" },
+  pagado: { label: "Pagado", color: "#6B8F5D", bg: "rgba(107,143,93,0.14)" }
 };
-
-const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-const DIAS = ["L","M","X","J","V","S","D"];
-
-// ---------- storage: deudas ----------
+const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+const DIAS = ["L", "M", "X", "J", "V", "S", "D"];
 async function loadDeudas() {
   try {
     const res = await window.storage.get("deudas:index", true);
     return res ? JSON.parse(res.value) : [];
-  } catch { return []; }
+  } catch (e) {
+    return [];
+  }
 }
 async function saveDeudas(list) {
   await window.storage.set("deudas:index", JSON.stringify(list), true);
 }
-
-// ---------- storage: accesos ----------
 async function cargarSolicitudes() {
   try {
     const r = await window.storage.get("accesos:solicitudes", true);
     return r ? JSON.parse(r.value) : [];
-  } catch { return []; }
+  } catch (e) {
+    return [];
+  }
 }
 async function guardarSolicitudes(lista) {
   await window.storage.set("accesos:solicitudes", JSON.stringify(lista), true);
 }
-
-// =====================================================================
-// PORTÓN DE ACCESO
-// =====================================================================
 function AccessGate({ children }) {
-  const [estado, setEstado] = useState("cargando"); // cargando | sin-solicitar | pendiente | rechazado | aprobado
+  const [estado, setEstado] = useState("cargando");
   const [esAdmin, setEsAdmin] = useState(false);
   const [misolicitud, setMisolicitud] = useState(null);
   const [solicitudes, setSolicitudes] = useState([]);
   const [panelAdmin, setPanelAdmin] = useState(false);
-
   const revisar = useCallback(async () => {
+    var _a, _b;
     let aprobadoPersonal = null, adminPersonal = null, misol = null;
-    try { aprobadoPersonal = (await window.storage.get("acceso:aprobado", false))?.value; } catch {}
-    try { adminPersonal = (await window.storage.get("acceso:esadmin", false))?.value; } catch {}
+    try {
+      aprobadoPersonal = (_a = await window.storage.get("acceso:aprobado", false)) == null ? void 0 : _a.value;
+    } catch (e) {
+    }
+    try {
+      adminPersonal = (_b = await window.storage.get("acceso:esadmin", false)) == null ? void 0 : _b.value;
+    } catch (e) {
+    }
     try {
       const r = await window.storage.get("acceso:misolicitud", false);
       misol = r ? JSON.parse(r.value) : null;
-    } catch {}
+    } catch (e) {
+    }
     setMisolicitud(misol);
     setEsAdmin(adminPersonal === "si");
-
-    if (aprobadoPersonal === "si") { setEstado("aprobado"); return; }
-
+    if (aprobadoPersonal === "si") {
+      setEstado("aprobado");
+      return;
+    }
     const lista = await cargarSolicitudes();
     setSolicitudes(lista);
-    if (!misol) { setEstado("sin-solicitar"); return; }
+    if (!misol) {
+      setEstado("sin-solicitar");
+      return;
+    }
     const encontrada = lista.find((s) => s.id === misol.id);
-    if (!encontrada) { setEstado("sin-solicitar"); return; }
+    if (!encontrada) {
+      setEstado("sin-solicitar");
+      return;
+    }
     if (encontrada.estado === "aprobado") {
       await window.storage.set("acceso:aprobado", "si", false);
     }
     setEstado(encontrada.estado);
   }, []);
-
-  useEffect(() => { revisar(); }, [revisar]);
-
+  useEffect(() => {
+    revisar();
+  }, [revisar]);
   useEffect(() => {
     if (estado !== "pendiente") return;
-    const t = setInterval(revisar, 12000);
+    const t = setInterval(revisar, 12e3);
     return () => clearInterval(t);
   }, [estado, revisar]);
-
   const solicitarAcceso = async (nombre) => {
     const id = uid();
-    const nueva = { id, nombre: nombre.trim(), fecha: new Date().toISOString(), estado: "pendiente" };
+    const nueva = { id, nombre: nombre.trim(), fecha: (/* @__PURE__ */ new Date()).toISOString(), estado: "pendiente" };
     const lista = await cargarSolicitudes();
     const next = [...lista, nueva];
     await guardarSolicitudes(next);
@@ -216,188 +203,92 @@ function AccessGate({ children }) {
     setSolicitudes(next);
     setEstado("pendiente");
   };
-
   const entrarComoAdmin = async (clave) => {
     if (clave.trim() !== CLAVE_ADMIN) return false;
-    try { await window.storage.set("acceso:aprobado", "si", false); } catch {}
-    try { await window.storage.set("acceso:esadmin", "si", false); } catch {}
+    try {
+      await window.storage.set("acceso:aprobado", "si", false);
+    } catch (e) {
+    }
+    try {
+      await window.storage.set("acceso:esadmin", "si", false);
+    } catch (e) {
+    }
     setEsAdmin(true);
     setEstado("aprobado");
     return true;
   };
-
   const responderSolicitud = async (id, nuevoEstado) => {
     const lista = await cargarSolicitudes();
-    const next = lista.map((s) => (s.id === id ? { ...s, estado: nuevoEstado } : s));
+    const next = lista.map((s) => s.id === id ? { ...s, estado: nuevoEstado } : s);
     await guardarSolicitudes(next);
     setSolicitudes(next);
   };
-
   if (estado === "cargando") {
-    return (
-      <div style={S.loadingWrap}>
-        <div style={S.loadingCard}>
-          <Coins size={28} color="#C9A227" />
-          <div style={{ marginTop: 10, color: "#A89A82" }}>Verificando acceso…</div>
-        </div>
-      </div>
-    );
+    return /* @__PURE__ */ React.createElement("div", { style: S.loadingWrap }, /* @__PURE__ */ React.createElement("div", { style: S.loadingCard }, /* @__PURE__ */ React.createElement(Coins, { size: 28, color: "#C9A227" }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 10, color: "#A89A82" } }, "Verificando acceso\u2026")));
   }
-
   if (estado !== "aprobado") {
-    return (
-      <PantallaAcceso
-        estado={estado}
-        onSolicitar={solicitarAcceso}
-        onAdmin={entrarComoAdmin}
-      />
+    return /* @__PURE__ */ React.createElement(
+      PantallaAcceso,
+      {
+        estado,
+        onSolicitar: solicitarAcceso,
+        onAdmin: entrarComoAdmin
+      }
     );
   }
-
-  return (
-    <>
-      {children}
-      {esAdmin && (
-        <button style={S.adminFab} onClick={() => setPanelAdmin(true)}>
-          <Users size={15} /> Accesos
-        </button>
-      )}
-      {panelAdmin && (
-        <PanelAdmin
-          solicitudes={solicitudes}
-          onResponder={responderSolicitud}
-          onRefrescar={async () => setSolicitudes(await cargarSolicitudes())}
-          onCerrar={() => setPanelAdmin(false)}
-        />
-      )}
-    </>
-  );
+  return /* @__PURE__ */ React.createElement(React.Fragment, null, children, esAdmin && /* @__PURE__ */ React.createElement("button", { style: S.adminFab, onClick: () => setPanelAdmin(true) }, /* @__PURE__ */ React.createElement(Users, { size: 15 }), " Accesos"), panelAdmin && /* @__PURE__ */ React.createElement(
+    PanelAdmin,
+    {
+      solicitudes,
+      onResponder: responderSolicitud,
+      onRefrescar: async () => setSolicitudes(await cargarSolicitudes()),
+      onCerrar: () => setPanelAdmin(false)
+    }
+  ));
 }
-
 function PantallaAcceso({ estado, onSolicitar, onAdmin }) {
   const [nombre, setNombre] = useState("");
   const [err, setErr] = useState("");
   const [mostrarAdmin, setMostrarAdmin] = useState(false);
   const [clave, setClave] = useState("");
   const [claveErr, setClaveErr] = useState("");
-
-  return (
-    <div style={S.loadingWrap}>
-      <div style={S.accessCard}>
-        <div style={S.logoMark}><Lock size={18} color="#171310" /></div>
-        <div style={S.title}>Veta</div>
-        <div style={{ ...S.subtitle, marginBottom: 18 }}>libro de préstamos y pagos — acceso restringido</div>
-
-        {estado === "sin-solicitar" && !mostrarAdmin && (
-          <>
-            <div style={S.accessText}>Escribe tu nombre para pedir acceso. Alguien con permiso de administrador debe aprobarlo.</div>
-            <input style={S.input} placeholder="Tu nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-            {err && <div style={S.formError}>{err}</div>}
-            <button
-              style={{ ...S.addBtn, marginTop: 12, width: "100%", justifyContent: "center" }}
-              onClick={() => (nombre.trim() ? onSolicitar(nombre) : setErr("Escribe tu nombre."))}
-            >
-              Solicitar acceso
-            </button>
-            <div style={S.accessAdminLink} onClick={() => setMostrarAdmin(true)}>¿Eres el administrador?</div>
-          </>
-        )}
-
-        {estado === "pendiente" && (
-          <div style={S.accessText}>
-            Tu solicitud fue enviada. Esta pantalla se actualiza sola en cuanto alguien te dé acceso — no necesitas hacer nada más.
-          </div>
-        )}
-
-        {estado === "rechazado" && (
-          <div style={S.accessText}>Tu solicitud de acceso fue rechazada. Habla con quien administra este libro si crees que es un error.</div>
-        )}
-
-        {mostrarAdmin && (
-          <>
-            <div style={S.accessText}>Clave de administrador:</div>
-            <input type="password" style={S.input} value={clave} onChange={(e) => setClave(e.target.value)} />
-            {claveErr && <div style={S.formError}>{claveErr}</div>}
-            <button
-              style={{ ...S.addBtn, marginTop: 12, width: "100%", justifyContent: "center" }}
-              onClick={async () => {
-                setClaveErr("");
-                try {
-                  const ok = await onAdmin(clave);
-                  if (!ok) setClaveErr("Clave incorrecta.");
-                } catch {
-                  setClaveErr("Ocurrió un error al validar. Intenta de nuevo.");
-                }
-              }}
-            >
-              <ShieldCheck size={15} /> Entrar como administrador
-            </button>
-            <div style={S.accessAdminLink} onClick={() => setMostrarAdmin(false)}>Volver</div>
-          </>
-        )}
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.loadingWrap }, /* @__PURE__ */ React.createElement("div", { style: S.accessCard }, /* @__PURE__ */ React.createElement("div", { style: S.logoMark }, /* @__PURE__ */ React.createElement(Lock, { size: 18, color: "#171310" })), /* @__PURE__ */ React.createElement("div", { style: S.title }, "Veta"), /* @__PURE__ */ React.createElement("div", { style: { ...S.subtitle, marginBottom: 18 } }, "libro de pr\xE9stamos y pagos \u2014 acceso restringido"), estado === "sin-solicitar" && !mostrarAdmin && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: S.accessText }, "Escribe tu nombre para pedir acceso. Alguien con permiso de administrador debe aprobarlo."), /* @__PURE__ */ React.createElement("input", { style: S.input, placeholder: "Tu nombre", value: nombre, onChange: (e) => setNombre(e.target.value) }), err && /* @__PURE__ */ React.createElement("div", { style: S.formError }, err), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      style: { ...S.addBtn, marginTop: 12, width: "100%", justifyContent: "center" },
+      onClick: () => nombre.trim() ? onSolicitar(nombre) : setErr("Escribe tu nombre.")
+    },
+    "Solicitar acceso"
+  ), /* @__PURE__ */ React.createElement("div", { style: S.accessAdminLink, onClick: () => setMostrarAdmin(true) }, "\xBFEres el administrador?")), estado === "pendiente" && /* @__PURE__ */ React.createElement("div", { style: S.accessText }, "Tu solicitud fue enviada. Esta pantalla se actualiza sola en cuanto alguien te d\xE9 acceso \u2014 no necesitas hacer nada m\xE1s."), estado === "rechazado" && /* @__PURE__ */ React.createElement("div", { style: S.accessText }, "Tu solicitud de acceso fue rechazada. Habla con quien administra este libro si crees que es un error."), mostrarAdmin && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: S.accessText }, "Clave de administrador:"), /* @__PURE__ */ React.createElement("input", { type: "password", style: S.input, value: clave, onChange: (e) => setClave(e.target.value) }), claveErr && /* @__PURE__ */ React.createElement("div", { style: S.formError }, claveErr), /* @__PURE__ */ React.createElement(
+    "button",
+    {
+      style: { ...S.addBtn, marginTop: 12, width: "100%", justifyContent: "center" },
+      onClick: async () => {
+        setClaveErr("");
+        try {
+          const ok = await onAdmin(clave);
+          if (!ok) setClaveErr("Clave incorrecta.");
+        } catch (e) {
+          setClaveErr("Ocurri\xF3 un error al validar. Intenta de nuevo.");
+        }
+      }
+    },
+    /* @__PURE__ */ React.createElement(ShieldCheck, { size: 15 }),
+    " Entrar como administrador"
+  ), /* @__PURE__ */ React.createElement("div", { style: S.accessAdminLink, onClick: () => setMostrarAdmin(false) }, "Volver"))));
 }
-
 function PanelAdmin({ solicitudes, onResponder, onRefrescar, onCerrar }) {
   const pendientes = solicitudes.filter((s) => s.estado === "pendiente");
   const resueltas = solicitudes.filter((s) => s.estado !== "pendiente");
-
   useEffect(() => {
-    const t = setInterval(onRefrescar, 10000);
+    const t = setInterval(onRefrescar, 1e4);
     return () => clearInterval(t);
   }, [onRefrescar]);
-
-  return (
-    <div style={S.overlay} onClick={onCerrar}>
-      <div style={S.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={S.modalHeader}>
-          <div style={S.modalTitle}>Solicitudes de acceso</div>
-          <button style={S.iconBtn} onClick={onCerrar}><X size={18} /></button>
-        </div>
-
-        <div style={S.fieldLabel}>Pendientes ({pendientes.length})</div>
-        {pendientes.length === 0 && <div style={{ ...S.emptyText, margin: "8px 0 16px" }}>No hay solicitudes esperando respuesta.</div>}
-        {pendientes.map((s) => (
-          <div key={s.id} style={S.calItem}>
-            <div style={S.calItemName}>{s.nombre}</div>
-            <div style={S.cardActions}>
-              <button style={S.actionBtnPrimary} onClick={() => onResponder(s.id, "aprobado")}><Check size={14} /> Aprobar</button>
-              <button style={S.actionBtnDanger} onClick={() => onResponder(s.id, "rechazado")}><X size={14} /> Rechazar</button>
-            </div>
-          </div>
-        ))}
-
-        {resueltas.length > 0 && (
-          <>
-            <div style={{ ...S.fieldLabel, marginTop: 16 }}>Ya resueltas</div>
-            {resueltas.map((s) => (
-              <div key={s.id} style={{ ...S.calItem, opacity: 0.7 }}>
-                <div style={S.calItemName}>{s.nombre}</div>
-                <div style={{ ...S.badge, color: s.estado === "aprobado" ? "#7FA37A" : "#D97757", background: "transparent" }}>
-                  {s.estado === "aprobado" ? "Aprobado" : "Rechazado"}
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCerrar }, /* @__PURE__ */ React.createElement("div", { style: S.modal, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalHeader }, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, "Solicitudes de acceso"), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: onCerrar }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: S.fieldLabel }, "Pendientes (", pendientes.length, ")"), pendientes.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { ...S.emptyText, margin: "8px 0 16px" } }, "No hay solicitudes esperando respuesta."), pendientes.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.id, style: S.calItem }, /* @__PURE__ */ React.createElement("div", { style: S.calItemName }, s.nombre), /* @__PURE__ */ React.createElement("div", { style: S.cardActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: () => onResponder(s.id, "aprobado") }, /* @__PURE__ */ React.createElement(Check, { size: 14 }), " Aprobar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnDanger, onClick: () => onResponder(s.id, "rechazado") }, /* @__PURE__ */ React.createElement(X, { size: 14 }), " Rechazar")))), resueltas.length > 0 && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { ...S.fieldLabel, marginTop: 16 } }, "Ya resueltas"), resueltas.map((s) => /* @__PURE__ */ React.createElement("div", { key: s.id, style: { ...S.calItem, opacity: 0.7 } }, /* @__PURE__ */ React.createElement("div", { style: S.calItemName }, s.nombre), /* @__PURE__ */ React.createElement("div", { style: { ...S.badge, color: s.estado === "aprobado" ? "#7FA37A" : "#D97757", background: "transparent" } }, s.estado === "aprobado" ? "Aprobado" : "Rechazado"))))));
 }
-
-// =====================================================================
-// APP PRINCIPAL
-// =====================================================================
 function App() {
-  return (
-    <AccessGate>
-      <LibroDeVeta />
-    </AccessGate>
-  );
+  return /* @__PURE__ */ React.createElement(AccessGate, null, /* @__PURE__ */ React.createElement(LibroDeVeta, null));
 }
-
 function LibroDeVeta() {
   const [deudas, setDeudas] = useState(null);
   const [vista, setVista] = useState("lista");
@@ -408,7 +299,7 @@ function LibroDeVeta() {
   const [abonoDe, setAbonoDe] = useState(null);
   const [confirmarBorrar, setConfirmarBorrar] = useState(null);
   const [mesCalendario, setMesCalendario] = useState(() => {
-    const d = new Date();
+    const d = /* @__PURE__ */ new Date();
     return { y: d.getFullYear(), m: d.getMonth() };
   });
   const [diaSeleccionado, setDiaSeleccionado] = useState(null);
@@ -416,9 +307,9 @@ function LibroDeVeta() {
   const [notifPermiso, setNotifPermiso] = useState(
     typeof window !== "undefined" && "Notification" in window ? Notification.permission : "unsupported"
   );
-
-  useEffect(() => { loadDeudas().then(setDeudas); }, []);
-
+  useEffect(() => {
+    loadDeudas().then(setDeudas);
+  }, []);
   useEffect(() => {
     if (!deudas || deudas.length === 0) return;
     if (notifPermiso !== "granted") return;
@@ -428,272 +319,158 @@ function LibroDeVeta() {
       try {
         const r = await window.storage.get(`avisos:${hoy}`, false);
         notificados = r ? JSON.parse(r.value) : {};
-      } catch {}
+      } catch (e) {
+      }
       let cambiado = false;
       for (const d of deudas) {
         if (restanteDe(d) <= 0) continue;
         const dias = daysUntil(d.fechaPago);
         if (dias <= DIAS_AVISO && !notificados[d.id]) {
-          const texto =
-            dias === 0 ? `Hoy se paga a ${d.nombre}`
-            : dias < 0 ? `Pago a ${d.nombre} sigue pendiente (fecha era hace ${Math.abs(dias)} día${Math.abs(dias) === 1 ? "" : "s"})`
-            : `Pago a ${d.nombre} vence en ${dias} día${dias === 1 ? "" : "s"}`;
-          try { new Notification("Veta · recordatorio de pago", { body: `${texto} · ${fmtCOP(restanteDe(d))}` }); } catch {}
+          const texto = dias === 0 ? `Hoy se paga a ${d.nombre}` : dias < 0 ? `Pago a ${d.nombre} sigue pendiente (fecha era hace ${Math.abs(dias)} d\xEDa${Math.abs(dias) === 1 ? "" : "s"})` : `Pago a ${d.nombre} vence en ${dias} d\xEDa${dias === 1 ? "" : "s"}`;
+          try {
+            new Notification("Veta \xB7 recordatorio de pago", { body: `${texto} \xB7 ${fmtCOP(restanteDe(d))}` });
+          } catch (e) {
+          }
           notificados[d.id] = true;
           cambiado = true;
         }
       }
       if (cambiado) {
-        try { await window.storage.set(`avisos:${hoy}`, JSON.stringify(notificados), false); } catch {}
+        try {
+          await window.storage.set(`avisos:${hoy}`, JSON.stringify(notificados), false);
+        } catch (e) {
+        }
       }
     })();
   }, [deudas, notifPermiso]);
-
   const pedirPermisoNotif = async () => {
     if (!("Notification" in window)) return;
     setNotifPermiso(await Notification.requestPermission());
   };
-
   const persist = useCallback(async (next) => {
     setDeudas(next);
-    try { await saveDeudas(next); }
-    catch { setError("No se pudo guardar el cambio. Intenta de nuevo."); setTimeout(() => setError(""), 4000); }
+    try {
+      await saveDeudas(next);
+    } catch (e) {
+      setError("No se pudo guardar el cambio. Intenta de nuevo.");
+      setTimeout(() => setError(""), 4e3);
+    }
   }, []);
-
   const upsertDeuda = (deuda) => {
     setDeudas((prev) => {
       const list = prev || [];
       const exists = list.some((d) => d.id === deuda.id);
-      const next = exists ? list.map((d) => (d.id === deuda.id ? deuda : d)) : [...list, deuda];
+      const next = exists ? list.map((d) => d.id === deuda.id ? deuda : d) : [...list, deuda];
       persist(next);
       return next;
     });
-    setModalAbierto(false); setEditando(null);
+    setModalAbierto(false);
+    setEditando(null);
   };
-
   const borrarDeuda = (id) => {
-    setDeudas((prev) => { const next = (prev || []).filter((d) => d.id !== id); persist(next); return next; });
+    setDeudas((prev) => {
+      const next = (prev || []).filter((d) => d.id !== id);
+      persist(next);
+      return next;
+    });
     setConfirmarBorrar(null);
   };
-
   const registrarAbono = (id, valor, fecha) => {
     setDeudas((prev) => {
-      const next = (prev || []).map((d) => d.id === id ? { ...d, abonos: [...(d.abonos || []), { valor, fecha }] } : d);
+      const next = (prev || []).map((d) => d.id === id ? { ...d, abonos: [...d.abonos || [], { valor, fecha }] } : d);
       persist(next);
       return next;
     });
     setAbonoDe(null);
   };
-
   const lista = deudas || [];
-
-  const recordatorios = useMemo(() =>
-    lista.filter((d) => restanteDe(d) > 0 && daysUntil(d.fechaPago) <= DIAS_AVISO)
-         .sort((a, b) => new Date(a.fechaPago) - new Date(b.fechaPago)),
+  const recordatorios = useMemo(
+    () => lista.filter((d) => restanteDe(d) > 0 && daysUntil(d.fechaPago) <= DIAS_AVISO).sort((a, b) => new Date(a.fechaPago) - new Date(b.fechaPago)),
     [lista]
   );
-
   const filtradas = useMemo(() => {
-    return lista
-      .filter((d) => {
-        const est = estadoDeuda(d);
-        if (filtroEstado !== "todos" && est !== filtroEstado) return false;
-        if (busqueda && !d.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
-        return true;
-      })
-      .sort((a, b) => {
-        const order = { proximo: 0, vigente: 1, pagado: 2 };
-        const ea = estadoDeuda(a), eb = estadoDeuda(b);
-        if (order[ea] !== order[eb]) return order[ea] - order[eb];
-        return new Date(a.fechaPago) - new Date(b.fechaPago);
-      });
+    return lista.filter((d) => {
+      const est = estadoDeuda(d);
+      if (filtroEstado !== "todos" && est !== filtroEstado) return false;
+      if (busqueda && !d.nombre.toLowerCase().includes(busqueda.toLowerCase())) return false;
+      return true;
+    }).sort((a, b) => {
+      const order = { proximo: 0, vigente: 1, pagado: 2 };
+      const ea = estadoDeuda(a), eb = estadoDeuda(b);
+      if (order[ea] !== order[eb]) return order[ea] - order[eb];
+      return new Date(a.fechaPago) - new Date(b.fechaPago);
+    });
   }, [lista, busqueda, filtroEstado]);
-
   if (deudas === null) {
-    return (
-      <div style={S.loadingWrap}>
-        <div style={S.loadingCard}>
-          <Coins size={28} color="#C9A227" />
-          <div style={{ marginTop: 10, color: "#A89A82" }}>Abriendo el libro de veta…</div>
-        </div>
-      </div>
-    );
+    return /* @__PURE__ */ React.createElement("div", { style: S.loadingWrap }, /* @__PURE__ */ React.createElement("div", { style: S.loadingCard }, /* @__PURE__ */ React.createElement(Coins, { size: 28, color: "#C9A227" }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 10, color: "#A89A82" } }, "Abriendo el libro de veta\u2026")));
   }
-
-  return (
-    <div style={S.app}>
-      <style>{GLOBAL_CSS}</style>
-
-      <header style={S.header}>
-        <div style={S.headerLeft}>
-          <div style={S.logoMark}><Coins size={20} color="#171310" /></div>
-          <div>
-            <div style={S.title}>Veta</div>
-            <div style={S.subtitle}>libro de préstamos y pagos</div>
-          </div>
-        </div>
-        <div style={S.headerRight}>
-          <div style={S.tabs}>
-            <button style={{ ...S.tabBtn, ...(vista === "lista" ? S.tabBtnActive : {}) }} onClick={() => setVista("lista")}><ClipboardList size={15} /> Lista</button>
-            <button style={{ ...S.tabBtn, ...(vista === "calendario" ? S.tabBtnActive : {}) }} onClick={() => setVista("calendario")}><CalendarIcon size={15} /> Calendario</button>
-          </div>
-          {notifPermiso !== "granted" && notifPermiso !== "unsupported" && (
-            <button style={S.notifBtn} onClick={pedirPermisoNotif}><Bell size={14} /> Activar avisos del navegador</button>
-          )}
-          {notifPermiso === "granted" && <div style={S.notifOn}><Bell size={14} /> Avisos activos en este navegador</div>}
-        </div>
-      </header>
-
-      {recordatorios.length > 0 && (
-        <div style={S.reminderBanner}>
-          <div style={S.reminderTitle}><AlertTriangle size={15} color="#E08D3C" /> Pagos que se acercan</div>
-          <div style={S.reminderList}>
-            {recordatorios.map((d) => {
-              const dias = daysUntil(d.fechaPago);
-              const texto = dias === 0 ? "hoy" : dias < 0 ? `hace ${Math.abs(dias)} día${Math.abs(dias) === 1 ? "" : "s"}` : `en ${dias} día${dias === 1 ? "" : "s"}`;
-              return (
-                <div key={d.id} style={S.reminderChip} onClick={() => { setEditando(d); setModalAbierto(true); }}>
-                  <strong>{d.nombre}</strong> · {fmtCOP(restanteDe(d))} · vence {texto}
-                </div>
-              );
-            })}
-          </div>
-          {notifPermiso !== "granted" && notifPermiso !== "unsupported" && (
-            <div style={S.reminderHint}>Activa los avisos del navegador arriba para recibir una notificación automática mientras esta pestaña esté abierta.</div>
-          )}
-        </div>
-      )}
-
-      {error && <div style={S.errorBanner}>{error}</div>}
-
-      {vista === "lista" ? (
-        <>
-          <div style={S.toolbar}>
-            <div style={S.searchBox}>
-              <Search size={15} color="#A89A82" />
-              <input style={S.searchInput} placeholder="Buscar por nombre…" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
-            </div>
-            <div style={S.filtros}>
-              {["todos", "proximo", "vigente", "pagado"].map((f) => (
-                <button key={f} onClick={() => setFiltroEstado(f)} style={{ ...S.filtroChip, ...(filtroEstado === f ? S.filtroChipActive : {}) }}>
-                  {f === "todos" ? "Todos" : ESTADO_INFO[f].label}
-                </button>
-              ))}
-            </div>
-            <button style={S.addBtn} onClick={() => { setEditando(null); setModalAbierto(true); }}><Plus size={16} /> Nuevo préstamo</button>
-          </div>
-
-          {filtradas.length === 0 ? (
-            <EmptyState onAdd={() => { setEditando(null); setModalAbierto(true); }} hasAny={lista.length > 0} />
-          ) : (
-            <div style={S.listWrap}>
-              {filtradas.map((d) => (
-                <DeudaCard key={d.id} deuda={d} onEditar={() => { setEditando(d); setModalAbierto(true); }} onAbonar={() => setAbonoDe(d)} onBorrar={() => setConfirmarBorrar(d)} />
-              ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <VistaCalendario deudas={lista} mes={mesCalendario} setMes={setMesCalendario} diaSeleccionado={diaSeleccionado} setDiaSeleccionado={setDiaSeleccionado} onEditar={(d) => { setEditando(d); setModalAbierto(true); }} />
-      )}
-
-      {modalAbierto && <ModalDeuda inicial={editando} onGuardar={upsertDeuda} onCerrar={() => { setModalAbierto(false); setEditando(null); }} />}
-      {abonoDe && <ModalAbono deuda={abonoDe} onGuardar={(valor, fecha) => registrarAbono(abonoDe.id, valor, fecha)} onCerrar={() => setAbonoDe(null)} />}
-      {confirmarBorrar && <ModalConfirmar nombre={confirmarBorrar.nombre} onConfirmar={() => borrarDeuda(confirmarBorrar.id)} onCancelar={() => setConfirmarBorrar(null)} />}
-
-      <footer style={S.footer}>Los datos de este libro son compartidos con quien tenga acceso aprobado.</footer>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.app }, /* @__PURE__ */ React.createElement("style", null, GLOBAL_CSS), /* @__PURE__ */ React.createElement("header", { style: S.header }, /* @__PURE__ */ React.createElement("div", { style: S.headerLeft }, /* @__PURE__ */ React.createElement("div", { style: S.logoMark }, /* @__PURE__ */ React.createElement(Coins, { size: 20, color: "#171310" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.title }, "Veta"), /* @__PURE__ */ React.createElement("div", { style: S.subtitle }, "libro de pr\xE9stamos y pagos"))), /* @__PURE__ */ React.createElement("div", { style: S.headerRight }, /* @__PURE__ */ React.createElement("div", { style: S.tabs }, /* @__PURE__ */ React.createElement("button", { style: { ...S.tabBtn, ...vista === "lista" ? S.tabBtnActive : {} }, onClick: () => setVista("lista") }, /* @__PURE__ */ React.createElement(ClipboardList, { size: 15 }), " Lista"), /* @__PURE__ */ React.createElement("button", { style: { ...S.tabBtn, ...vista === "calendario" ? S.tabBtnActive : {} }, onClick: () => setVista("calendario") }, /* @__PURE__ */ React.createElement(CalendarIcon, { size: 15 }), " Calendario")), notifPermiso !== "granted" && notifPermiso !== "unsupported" && /* @__PURE__ */ React.createElement("button", { style: S.notifBtn, onClick: pedirPermisoNotif }, /* @__PURE__ */ React.createElement(Bell, { size: 14 }), " Activar avisos del navegador"), notifPermiso === "granted" && /* @__PURE__ */ React.createElement("div", { style: S.notifOn }, /* @__PURE__ */ React.createElement(Bell, { size: 14 }), " Avisos activos en este navegador"))), recordatorios.length > 0 && /* @__PURE__ */ React.createElement("div", { style: S.reminderBanner }, /* @__PURE__ */ React.createElement("div", { style: S.reminderTitle }, /* @__PURE__ */ React.createElement(AlertTriangle, { size: 15, color: "#E08D3C" }), " Pagos que se acercan"), /* @__PURE__ */ React.createElement("div", { style: S.reminderList }, recordatorios.map((d) => {
+    const dias = daysUntil(d.fechaPago);
+    const texto = dias === 0 ? "hoy" : dias < 0 ? `hace ${Math.abs(dias)} d\xEDa${Math.abs(dias) === 1 ? "" : "s"}` : `en ${dias} d\xEDa${dias === 1 ? "" : "s"}`;
+    return /* @__PURE__ */ React.createElement("div", { key: d.id, style: S.reminderChip, onClick: () => {
+      setEditando(d);
+      setModalAbierto(true);
+    } }, /* @__PURE__ */ React.createElement("strong", null, d.nombre), " \xB7 ", fmtCOP(restanteDe(d)), " \xB7 vence ", texto);
+  })), notifPermiso !== "granted" && notifPermiso !== "unsupported" && /* @__PURE__ */ React.createElement("div", { style: S.reminderHint }, "Activa los avisos del navegador arriba para recibir una notificaci\xF3n autom\xE1tica mientras esta pesta\xF1a est\xE9 abierta.")), error && /* @__PURE__ */ React.createElement("div", { style: S.errorBanner }, error), vista === "lista" ? /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: S.toolbar }, /* @__PURE__ */ React.createElement("div", { style: S.searchBox }, /* @__PURE__ */ React.createElement(Search, { size: 15, color: "#A89A82" }), /* @__PURE__ */ React.createElement("input", { style: S.searchInput, placeholder: "Buscar por nombre\u2026", value: busqueda, onChange: (e) => setBusqueda(e.target.value) })), /* @__PURE__ */ React.createElement("div", { style: S.filtros }, ["todos", "proximo", "vigente", "pagado"].map((f) => /* @__PURE__ */ React.createElement("button", { key: f, onClick: () => setFiltroEstado(f), style: { ...S.filtroChip, ...filtroEstado === f ? S.filtroChipActive : {} } }, f === "todos" ? "Todos" : ESTADO_INFO[f].label))), /* @__PURE__ */ React.createElement("button", { style: S.addBtn, onClick: () => {
+    setEditando(null);
+    setModalAbierto(true);
+  } }, /* @__PURE__ */ React.createElement(Plus, { size: 16 }), " Nuevo pr\xE9stamo")), filtradas.length === 0 ? /* @__PURE__ */ React.createElement(EmptyState, { onAdd: () => {
+    setEditando(null);
+    setModalAbierto(true);
+  }, hasAny: lista.length > 0 }) : /* @__PURE__ */ React.createElement("div", { style: S.listWrap }, filtradas.map((d) => /* @__PURE__ */ React.createElement(DeudaCard, { key: d.id, deuda: d, onEditar: () => {
+    setEditando(d);
+    setModalAbierto(true);
+  }, onAbonar: () => setAbonoDe(d), onBorrar: () => setConfirmarBorrar(d) })))) : /* @__PURE__ */ React.createElement(VistaCalendario, { deudas: lista, mes: mesCalendario, setMes: setMesCalendario, diaSeleccionado, setDiaSeleccionado, onEditar: (d) => {
+    setEditando(d);
+    setModalAbierto(true);
+  } }), modalAbierto && /* @__PURE__ */ React.createElement(ModalDeuda, { inicial: editando, onGuardar: upsertDeuda, onCerrar: () => {
+    setModalAbierto(false);
+    setEditando(null);
+  } }), abonoDe && /* @__PURE__ */ React.createElement(ModalAbono, { deuda: abonoDe, onGuardar: (valor, fecha) => registrarAbono(abonoDe.id, valor, fecha), onCerrar: () => setAbonoDe(null) }), confirmarBorrar && /* @__PURE__ */ React.createElement(ModalConfirmar, { nombre: confirmarBorrar.nombre, onConfirmar: () => borrarDeuda(confirmarBorrar.id), onCancelar: () => setConfirmarBorrar(null) }), /* @__PURE__ */ React.createElement("footer", { style: S.footer }, "Los datos de este libro son compartidos con quien tenga acceso aprobado."));
 }
-
-// ---------- componentes ----------
-
 function EmptyState({ onAdd, hasAny }) {
-  return (
-    <div style={S.empty}>
-      <Coins size={30} color="#4A4032" />
-      <div style={S.emptyTitle}>{hasAny ? "Nada coincide con ese filtro" : "Todavía no hay préstamos registrados"}</div>
-      <div style={S.emptyText}>{hasAny ? "Prueba cambiando la búsqueda o el filtro de estado." : "Registra el primero: a quién, cuánto, a qué % y para cuándo."}</div>
-      {!hasAny && <button style={S.addBtn} onClick={onAdd}><Plus size={16} /> Nuevo préstamo</button>}
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.empty }, /* @__PURE__ */ React.createElement(Coins, { size: 30, color: "#4A4032" }), /* @__PURE__ */ React.createElement("div", { style: S.emptyTitle }, hasAny ? "Nada coincide con ese filtro" : "Todav\xEDa no hay pr\xE9stamos registrados"), /* @__PURE__ */ React.createElement("div", { style: S.emptyText }, hasAny ? "Prueba cambiando la b\xFAsqueda o el filtro de estado." : "Registra el primero: a qui\xE9n, cu\xE1nto, a qu\xE9 % y para cu\xE1ndo."), !hasAny && /* @__PURE__ */ React.createElement("button", { style: S.addBtn, onClick: onAdd }, /* @__PURE__ */ React.createElement(Plus, { size: 16 }), " Nuevo pr\xE9stamo"));
 }
-
 function DeudaCard({ deuda, onEditar, onAbonar, onBorrar }) {
   const abonado = abonadoDe(deuda);
   const total = montoTotal(deuda);
   const restante = restanteDe(deuda);
-  const pct = Math.min(100, Math.round((abonado / total) * 100));
+  const pct = Math.min(100, Math.round(abonado / total * 100));
   const est = estadoDeuda(deuda);
   const info = ESTADO_INFO[est];
   const dias = daysUntil(deuda.fechaPago);
-
   let diasTexto;
   if (est === "pagado") diasTexto = "Saldado";
-  else if (dias < 0) diasTexto = `Fecha era hace ${Math.abs(dias)} día${Math.abs(dias) === 1 ? "" : "s"}`;
+  else if (dias < 0) diasTexto = `Fecha era hace ${Math.abs(dias)} d\xEDa${Math.abs(dias) === 1 ? "" : "s"}`;
   else if (dias === 0) diasTexto = "Vence hoy";
-  else diasTexto = `Vence en ${dias} día${dias === 1 ? "" : "s"}`;
-
-  return (
-    <div style={S.card}>
-      <div style={S.cardTop}>
-        <div>
-          <div style={S.cardName}>{deuda.nombre}</div>
-          <div style={S.cardMeta}>{deuda.motivo || "Sin concepto"}</div>
-        </div>
-        <div style={{ ...S.badge, color: info.color, background: info.bg }}>{info.label}</div>
-      </div>
-
-      <div style={S.veta}><div style={{ ...S.vetaFill, width: `${pct}%` }} /></div>
-      <div style={S.vetaLabels}><span>{fmtCOP(abonado)} abonado</span><span>{fmtCOP(restante)} pendiente de {fmtCOP(total)}</span></div>
-
-      <div style={S.cardGrid}>
-        <div><div style={S.cardLabel}>Banco</div><div style={S.cardValue}>{deuda.banco || "—"}</div></div>
-        <div><div style={S.cardLabel}>Número de cuenta</div><div style={S.cardValue}>{deuda.cuenta || "—"}</div></div>
-        <div><div style={S.cardLabel}>Monto prestado / tasa</div><div style={S.cardValue}>{fmtCOP(deuda.monto)} · {deuda.tasa || 0}%</div></div>
-        <div><div style={S.cardLabel}>Prestado el</div><div style={S.cardValue}>{deuda.fechaPrestamo}</div></div>
-        <div><div style={S.cardLabel}>Fecha de pago</div><div style={{ ...S.cardValue, color: info.color, fontWeight: 600 }}>{deuda.fechaPago} · {diasTexto}</div></div>
-      </div>
-
-      {deuda.notas && <div style={S.notas}>{deuda.notas}</div>}
-
-      <div style={S.cardActions}>
-        {est !== "pagado" && <button style={S.actionBtnPrimary} onClick={onAbonar}><Wallet size={14} /> Registrar abono</button>}
-        <button style={S.actionBtn} onClick={onEditar}><Pencil size={14} /> Editar</button>
-        <button style={S.actionBtnDanger} onClick={onBorrar}><Trash2 size={14} /> Eliminar</button>
-      </div>
-    </div>
-  );
+  else diasTexto = `Vence en ${dias} d\xEDa${dias === 1 ? "" : "s"}`;
+  return /* @__PURE__ */ React.createElement("div", { style: S.card }, /* @__PURE__ */ React.createElement("div", { style: S.cardTop }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardName }, deuda.nombre), /* @__PURE__ */ React.createElement("div", { style: S.cardMeta }, deuda.motivo || "Sin concepto")), /* @__PURE__ */ React.createElement("div", { style: { ...S.badge, color: info.color, background: info.bg } }, info.label)), /* @__PURE__ */ React.createElement("div", { style: S.veta }, /* @__PURE__ */ React.createElement("div", { style: { ...S.vetaFill, width: `${pct}%` } })), /* @__PURE__ */ React.createElement("div", { style: S.vetaLabels }, /* @__PURE__ */ React.createElement("span", null, fmtCOP(abonado), " abonado"), /* @__PURE__ */ React.createElement("span", null, fmtCOP(restante), " pendiente de ", fmtCOP(total))), /* @__PURE__ */ React.createElement("div", { style: S.cardGrid }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Banco"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.banco || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "N\xFAmero de cuenta"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.cuenta || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Monto prestado / tasa"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, fmtCOP(deuda.monto), " \xB7 ", deuda.tasa || 0, "%")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Prestado el"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.fechaPrestamo)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Fecha de pago"), /* @__PURE__ */ React.createElement("div", { style: { ...S.cardValue, color: info.color, fontWeight: 600 } }, deuda.fechaPago, " \xB7 ", diasTexto))), deuda.notas && /* @__PURE__ */ React.createElement("div", { style: S.notas }, deuda.notas), /* @__PURE__ */ React.createElement("div", { style: S.cardActions }, est !== "pagado" && /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: onAbonar }, /* @__PURE__ */ React.createElement(Wallet, { size: 14 }), " Registrar abono"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onEditar }, /* @__PURE__ */ React.createElement(Pencil, { size: 14 }), " Editar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnDanger, onClick: onBorrar }, /* @__PURE__ */ React.createElement(Trash2, { size: 14 }), " Eliminar")));
 }
-
 function ModalDeuda({ inicial, onGuardar, onCerrar }) {
-  const bancoInicial = inicial?.banco || "";
+  const bancoInicial = (inicial == null ? void 0 : inicial.banco) || "";
   const enLista = BANCOS_CO.includes(bancoInicial);
-
-  const [nombre, setNombre] = useState(inicial?.nombre || "");
-  const [bancoSel, setBancoSel] = useState(enLista ? bancoInicial : (bancoInicial ? "Otro" : ""));
+  const [nombre, setNombre] = useState((inicial == null ? void 0 : inicial.nombre) || "");
+  const [bancoSel, setBancoSel] = useState(enLista ? bancoInicial : bancoInicial ? "Otro" : "");
   const [bancoOtro, setBancoOtro] = useState(enLista ? "" : bancoInicial);
-  const [cuenta, setCuenta] = useState(inicial?.cuenta || "");
-  const [monto, setMonto] = useState(inicial?.monto ? String(inicial.monto) : "");
-  const [tasa, setTasa] = useState(inicial?.tasa != null ? String(inicial.tasa) : "0");
-  const [motivo, setMotivo] = useState(inicial?.motivo || "");
-  const [fechaPrestamo, setFechaPrestamo] = useState(inicial?.fechaPrestamo || todayISO());
-  const [fechaPago, setFechaPago] = useState(inicial?.fechaPago || todayISO());
-  const [notas, setNotas] = useState(inicial?.notas || "");
+  const [cuenta, setCuenta] = useState((inicial == null ? void 0 : inicial.cuenta) || "");
+  const [monto, setMonto] = useState((inicial == null ? void 0 : inicial.monto) ? String(inicial.monto) : "");
+  const [tasa, setTasa] = useState((inicial == null ? void 0 : inicial.tasa) != null ? String(inicial.tasa) : "0");
+  const [motivo, setMotivo] = useState((inicial == null ? void 0 : inicial.motivo) || "");
+  const [fechaPrestamo, setFechaPrestamo] = useState((inicial == null ? void 0 : inicial.fechaPrestamo) || todayISO());
+  const [fechaPago, setFechaPago] = useState((inicial == null ? void 0 : inicial.fechaPago) || todayISO());
+  const [notas, setNotas] = useState((inicial == null ? void 0 : inicial.notas) || "");
   const [err, setErr] = useState("");
-
   const montoNum = Number(monto) || 0;
   const tasaNum = Number(tasa) || 0;
-  const totalPreview = montoNum + (montoNum * tasaNum) / 100;
-
+  const totalPreview = montoNum + montoNum * tasaNum / 100;
   const guardar = () => {
     if (!nombre.trim()) return setErr("Falta el nombre de la persona.");
-    if (!montoNum || montoNum <= 0) return setErr("El monto debe ser un número mayor a cero.");
+    if (!montoNum || montoNum <= 0) return setErr("El monto debe ser un n\xFAmero mayor a cero.");
     if (tasaNum < 0) return setErr("La tasa no puede ser negativa.");
     if (!fechaPago) return setErr("Falta la fecha de pago.");
     const bancoFinal = bancoSel === "Otro" ? bancoOtro.trim() : bancoSel;
     onGuardar({
-      id: inicial?.id || uid(),
+      id: (inicial == null ? void 0 : inicial.id) || uid(),
       nombre: nombre.trim(),
       banco: bancoFinal,
       cuenta: cuenta.trim(),
@@ -703,216 +480,85 @@ function ModalDeuda({ inicial, onGuardar, onCerrar }) {
       fechaPrestamo,
       fechaPago,
       notas: notas.trim(),
-      abonos: inicial?.abonos || [],
+      abonos: (inicial == null ? void 0 : inicial.abonos) || []
     });
   };
-
-  return (
-    <div style={S.overlay} onClick={onCerrar}>
-      <div style={S.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={S.modalHeader}>
-          <div style={S.modalTitle}>{inicial ? "Editar préstamo" : "Nuevo préstamo"}</div>
-          <button style={S.iconBtn} onClick={onCerrar}><X size={18} /></button>
-        </div>
-
-        <div style={S.formGrid}>
-          <Field label="Nombre de la persona *" span={2}>
-            <input style={S.input} value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Ej. Carlos Ramírez" />
-          </Field>
-
-          <Field label="Banco">
-            <select style={S.input} value={bancoSel} onChange={(e) => setBancoSel(e.target.value)}>
-              <option value="">Selecciona un banco</option>
-              {BANCOS_CO.map((b) => <option key={b} value={b}>{b}</option>)}
-            </select>
-          </Field>
-          <Field label={bancoSel === "Otro" ? "Nombre del banco" : "Número de cuenta"}>
-            {bancoSel === "Otro" ? (
-              <input style={S.input} value={bancoOtro} onChange={(e) => setBancoOtro(e.target.value)} placeholder="Nombre del banco" />
-            ) : (
-              <input style={S.input} value={cuenta} onChange={(e) => setCuenta(e.target.value)} placeholder="Ej. Ahorros 123-456789-00" />
-            )}
-          </Field>
-          {bancoSel === "Otro" && (
-            <Field label="Número de cuenta" span={2}>
-              <input style={S.input} value={cuenta} onChange={(e) => setCuenta(e.target.value)} placeholder="Ej. Ahorros 123-456789-00" />
-            </Field>
-          )}
-
-          <Field label="Monto prestado (COP) *">
-            <input style={S.input} inputMode="numeric" value={formatMiles(monto)} onChange={(e) => setMonto(e.target.value.replace(/[^0-9]/g, ""))} placeholder="0" />
-          </Field>
-          <Field label="Tasa de interés (%)">
-            <div style={S.inputWithIcon}>
-              <input style={S.inputBare} value={tasa} onChange={(e) => setTasa(e.target.value.replace(/[^0-9.]/g, ""))} placeholder="0" inputMode="decimal" />
-              <Percent size={14} color="#A89A82" />
-            </div>
-          </Field>
-
-          <Field label="Motivo / concepto" span={2}>
-            <input style={S.input} value={motivo} onChange={(e) => setMotivo(e.target.value)} placeholder="¿Para qué se prestó?" />
-          </Field>
-
-          <Field label="Fecha del préstamo">
-            <input type="date" style={S.input} value={fechaPrestamo} onChange={(e) => setFechaPrestamo(e.target.value)} />
-          </Field>
-          <Field label="Fecha de pago *">
-            <input type="date" style={S.input} value={fechaPago} onChange={(e) => setFechaPago(e.target.value)} />
-          </Field>
-
-          <Field label="Notas" span={2}>
-            <textarea style={{ ...S.input, minHeight: 70, resize: "vertical" }} value={notas} onChange={(e) => setNotas(e.target.value)} placeholder="Detalles adicionales" />
-          </Field>
-        </div>
-
-        {montoNum > 0 && (
-          <div style={S.previewBox}>Total a pagar con el {tasaNum || 0}%: <strong style={{ color: "#F0E6D2" }}>{fmtCOP(totalPreview)}</strong></div>
-        )}
-
-        {err && <div style={S.formError}>{err}</div>}
-
-        <div style={S.modalActions}>
-          <button style={S.actionBtn} onClick={onCerrar}>Cancelar</button>
-          <button style={S.actionBtnPrimary} onClick={guardar}><Check size={15} /> Guardar</button>
-        </div>
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCerrar }, /* @__PURE__ */ React.createElement("div", { style: S.modal, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalHeader }, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, inicial ? "Editar pr\xE9stamo" : "Nuevo pr\xE9stamo"), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: onCerrar }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: S.formGrid }, /* @__PURE__ */ React.createElement(Field, { label: "Nombre de la persona *", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: nombre, onChange: (e) => setNombre(e.target.value), placeholder: "Ej. Carlos Ram\xEDrez" })), /* @__PURE__ */ React.createElement(Field, { label: "Banco" }, /* @__PURE__ */ React.createElement("select", { style: S.input, value: bancoSel, onChange: (e) => setBancoSel(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Selecciona un banco"), BANCOS_CO.map((b) => /* @__PURE__ */ React.createElement("option", { key: b, value: b }, b)))), /* @__PURE__ */ React.createElement(Field, { label: bancoSel === "Otro" ? "Nombre del banco" : "N\xFAmero de cuenta" }, bancoSel === "Otro" ? /* @__PURE__ */ React.createElement("input", { style: S.input, value: bancoOtro, onChange: (e) => setBancoOtro(e.target.value), placeholder: "Nombre del banco" }) : /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), bancoSel === "Otro" && /* @__PURE__ */ React.createElement(Field, { label: "N\xFAmero de cuenta", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), /* @__PURE__ */ React.createElement(Field, { label: "Monto prestado (COP) *" }, /* @__PURE__ */ React.createElement("input", { style: S.input, inputMode: "numeric", value: formatMiles(monto), onChange: (e) => setMonto(e.target.value.replace(/[^0-9]/g, "")), placeholder: "0" })), /* @__PURE__ */ React.createElement(Field, { label: "Tasa de inter\xE9s (%)" }, /* @__PURE__ */ React.createElement("div", { style: S.inputWithIcon }, /* @__PURE__ */ React.createElement("input", { style: S.inputBare, value: tasa, onChange: (e) => setTasa(e.target.value.replace(/[^0-9.]/g, "")), placeholder: "0", inputMode: "decimal" }), /* @__PURE__ */ React.createElement(Percent, { size: 14, color: "#A89A82" }))), /* @__PURE__ */ React.createElement(Field, { label: "Motivo / concepto", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: motivo, onChange: (e) => setMotivo(e.target.value), placeholder: "\xBFPara qu\xE9 se prest\xF3?" })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha del pr\xE9stamo" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPrestamo, onChange: (e) => setFechaPrestamo(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha de pago *" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPago, onChange: (e) => setFechaPago(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Notas", span: 2 }, /* @__PURE__ */ React.createElement("textarea", { style: { ...S.input, minHeight: 70, resize: "vertical" }, value: notas, onChange: (e) => setNotas(e.target.value), placeholder: "Detalles adicionales" }))), montoNum > 0 && /* @__PURE__ */ React.createElement("div", { style: S.previewBox }, "Total a pagar con el ", tasaNum || 0, "%: ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#F0E6D2" } }, fmtCOP(totalPreview))), err && /* @__PURE__ */ React.createElement("div", { style: S.formError }, err), /* @__PURE__ */ React.createElement("div", { style: S.modalActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onCerrar }, "Cancelar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: guardar }, /* @__PURE__ */ React.createElement(Check, { size: 15 }), " Guardar"))));
 }
-
 function ModalAbono({ deuda, onGuardar, onCerrar }) {
   const restante = restanteDe(deuda);
   const [valor, setValor] = useState(String(restante));
   const [fecha, setFecha] = useState(todayISO());
   const [err, setErr] = useState("");
-
   const guardar = () => {
     const n = Number(valor);
     if (!n || n <= 0) return setErr("Ingresa un valor de abono mayor a cero.");
     onGuardar(n, fecha);
   };
-
-  return (
-    <div style={S.overlay} onClick={onCerrar}>
-      <div style={{ ...S.modal, maxWidth: 380 }} onClick={(e) => e.stopPropagation()}>
-        <div style={S.modalHeader}>
-          <div style={S.modalTitle}>Abono a {deuda.nombre}</div>
-          <button style={S.iconBtn} onClick={onCerrar}><X size={18} /></button>
-        </div>
-        <div style={{ color: "#A89A82", fontSize: 13, marginBottom: 14 }}>Pendiente actual (con interés): <strong style={{ color: "#F0E6D2" }}>{fmtCOP(restante)}</strong></div>
-        <div style={S.formGrid}>
-          <Field label="Valor del abono" span={2}>
-            <input style={S.input} inputMode="numeric" value={formatMiles(valor)} onChange={(e) => setValor(e.target.value.replace(/[^0-9]/g, ""))} />
-          </Field>
-          <Field label="Fecha" span={2}>
-            <input type="date" style={S.input} value={fecha} onChange={(e) => setFecha(e.target.value)} />
-          </Field>
-        </div>
-        {err && <div style={S.formError}>{err}</div>}
-        <div style={S.modalActions}>
-          <button style={S.actionBtn} onClick={onCerrar}>Cancelar</button>
-          <button style={S.actionBtnPrimary} onClick={guardar}><Check size={15} /> Registrar</button>
-        </div>
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCerrar }, /* @__PURE__ */ React.createElement("div", { style: { ...S.modal, maxWidth: 380 }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalHeader }, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, "Abono a ", deuda.nombre), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: onCerrar }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: { color: "#A89A82", fontSize: 13, marginBottom: 14 } }, "Pendiente actual (con inter\xE9s): ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#F0E6D2" } }, fmtCOP(restante))), /* @__PURE__ */ React.createElement("div", { style: S.formGrid }, /* @__PURE__ */ React.createElement(Field, { label: "Valor del abono", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, inputMode: "numeric", value: formatMiles(valor), onChange: (e) => setValor(e.target.value.replace(/[^0-9]/g, "")) })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha", span: 2 }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fecha, onChange: (e) => setFecha(e.target.value) }))), err && /* @__PURE__ */ React.createElement("div", { style: S.formError }, err), /* @__PURE__ */ React.createElement("div", { style: S.modalActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onCerrar }, "Cancelar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: guardar }, /* @__PURE__ */ React.createElement(Check, { size: 15 }), " Registrar"))));
 }
-
 function ModalConfirmar({ nombre, onConfirmar, onCancelar }) {
-  return (
-    <div style={S.overlay} onClick={onCancelar}>
-      <div style={{ ...S.modal, maxWidth: 360 }} onClick={(e) => e.stopPropagation()}>
-        <div style={S.modalTitle}>¿Eliminar este préstamo?</div>
-        <div style={{ color: "#A89A82", fontSize: 13, margin: "10px 0 18px" }}>Se eliminará el registro de <strong style={{ color: "#F0E6D2" }}>{nombre}</strong> junto con su historial de abonos. Esta acción no se puede deshacer.</div>
-        <div style={S.modalActions}>
-          <button style={S.actionBtn} onClick={onCancelar}>Cancelar</button>
-          <button style={S.actionBtnDanger} onClick={onConfirmar}><Trash2 size={14} /> Eliminar</button>
-        </div>
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCancelar }, /* @__PURE__ */ React.createElement("div", { style: { ...S.modal, maxWidth: 360 }, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, "\xBFEliminar este pr\xE9stamo?"), /* @__PURE__ */ React.createElement("div", { style: { color: "#A89A82", fontSize: 13, margin: "10px 0 18px" } }, "Se eliminar\xE1 el registro de ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#F0E6D2" } }, nombre), " junto con su historial de abonos. Esta acci\xF3n no se puede deshacer."), /* @__PURE__ */ React.createElement("div", { style: S.modalActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onCancelar }, "Cancelar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnDanger, onClick: onConfirmar }, /* @__PURE__ */ React.createElement(Trash2, { size: 14 }), " Eliminar"))));
 }
-
 function Field({ label, span, children }) {
-  return <div style={{ gridColumn: span === 2 ? "span 2" : "span 1" }}><div style={S.fieldLabel}>{label}</div>{children}</div>;
+  return /* @__PURE__ */ React.createElement("div", { style: { gridColumn: span === 2 ? "span 2" : "span 1" } }, /* @__PURE__ */ React.createElement("div", { style: S.fieldLabel }, label), children);
 }
-
 function VistaCalendario({ deudas, mes, setMes, diaSeleccionado, setDiaSeleccionado, onEditar }) {
   const { y, m } = mes;
   const primerDia = new Date(y, m, 1);
   const offset = (primerDia.getDay() + 6) % 7;
   const diasEnMes = new Date(y, m + 1, 0).getDate();
-
   const porDia = useMemo(() => {
     const map = {};
     deudas.forEach((d) => {
       const [yy, mm, dd] = d.fechaPago.split("-").map(Number);
-      if (yy === y && mm - 1 === m) { map[dd] = map[dd] || []; map[dd].push(d); }
+      if (yy === y && mm - 1 === m) {
+        map[dd] = map[dd] || [];
+        map[dd].push(d);
+      }
     });
     return map;
   }, [deudas, y, m]);
-
   const celdas = [];
   for (let i = 0; i < offset; i++) celdas.push(null);
   for (let d = 1; d <= diasEnMes; d++) celdas.push(d);
-
   const cambiarMes = (delta) => {
     let nm = m + delta, ny = y;
-    if (nm < 0) { nm = 11; ny--; } if (nm > 11) { nm = 0; ny++; }
-    setMes({ y: ny, m: nm }); setDiaSeleccionado(null);
+    if (nm < 0) {
+      nm = 11;
+      ny--;
+    }
+    if (nm > 11) {
+      nm = 0;
+      ny++;
+    }
+    setMes({ y: ny, m: nm });
+    setDiaSeleccionado(null);
   };
-
-  const seleccionadas = diaSeleccionado ? (porDia[diaSeleccionado] || []) : [];
-  const hoy = new Date();
+  const seleccionadas = diaSeleccionado ? porDia[diaSeleccionado] || [] : [];
+  const hoy = /* @__PURE__ */ new Date();
   const esHoyMes = hoy.getFullYear() === y && hoy.getMonth() === m;
-
-  return (
-    <div style={S.calWrap} className="cal-wrap">
-      <div style={S.calMain}>
-        <div style={S.calHeader}>
-          <button style={S.iconBtn} onClick={() => cambiarMes(-1)}><ChevronLeft size={18} /></button>
-          <div style={S.calMonthTitle}>{MESES[m]} {y}</div>
-          <button style={S.iconBtn} onClick={() => cambiarMes(1)}><ChevronRight size={18} /></button>
-        </div>
-        <div style={S.calGridHead}>{DIAS.map((d) => <div key={d} style={S.calDow}>{d}</div>)}</div>
-        <div style={S.calGrid}>
-          {celdas.map((d, i) => {
-            if (d === null) return <div key={i} style={S.calCellEmpty} />;
-            const items = porDia[d] || [];
-            const esHoy = esHoyMes && hoy.getDate() === d;
-            const tieneProximo = items.some((x) => estadoDeuda(x) === "proximo");
-            return (
-              <button key={i} onClick={() => items.length && setDiaSeleccionado(diaSeleccionado === d ? null : d)}
-                style={{ ...S.calCell, ...(esHoy ? S.calCellHoy : {}), ...(diaSeleccionado === d ? S.calCellSel : {}), cursor: items.length ? "pointer" : "default" }}>
-                <span style={S.calCellNum}>{d}</span>
-                {items.length > 0 && <span style={{ ...S.calDot, background: tieneProximo ? "#E08D3C" : "#7FA37A" }}>{items.length}</span>}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      <div style={S.calSide}>
-        <div style={S.calSideTitle}>{diaSeleccionado ? `Vencen el ${diaSeleccionado} de ${MESES[m]}` : "Selecciona un día con pagos"}</div>
-        {seleccionadas.length === 0 && <div style={S.emptyText}>Haz clic en un día marcado del calendario para ver los pagos que vencen.</div>}
-        {seleccionadas.map((d) => {
-          const info = ESTADO_INFO[estadoDeuda(d)];
-          return (
-            <div key={d.id} style={S.calItem} onClick={() => onEditar(d)}>
-              <div style={S.calItemName}>{d.nombre}</div>
-              <div style={{ ...S.badge, color: info.color, background: info.bg }}>{info.label}</div>
-              <div style={S.calItemAmt}>{fmtCOP(restanteDe(d))} pendiente</div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return /* @__PURE__ */ React.createElement("div", { style: S.calWrap, className: "cal-wrap" }, /* @__PURE__ */ React.createElement("div", { style: S.calMain }, /* @__PURE__ */ React.createElement("div", { style: S.calHeader }, /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: () => cambiarMes(-1) }, /* @__PURE__ */ React.createElement(ChevronLeft, { size: 18 })), /* @__PURE__ */ React.createElement("div", { style: S.calMonthTitle }, MESES[m], " ", y), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: () => cambiarMes(1) }, /* @__PURE__ */ React.createElement(ChevronRight, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: S.calGridHead }, DIAS.map((d) => /* @__PURE__ */ React.createElement("div", { key: d, style: S.calDow }, d))), /* @__PURE__ */ React.createElement("div", { style: S.calGrid }, celdas.map((d, i) => {
+    if (d === null) return /* @__PURE__ */ React.createElement("div", { key: i, style: S.calCellEmpty });
+    const items = porDia[d] || [];
+    const esHoy = esHoyMes && hoy.getDate() === d;
+    const tieneProximo = items.some((x) => estadoDeuda(x) === "proximo");
+    return /* @__PURE__ */ React.createElement(
+      "button",
+      {
+        key: i,
+        onClick: () => items.length && setDiaSeleccionado(diaSeleccionado === d ? null : d),
+        style: { ...S.calCell, ...esHoy ? S.calCellHoy : {}, ...diaSeleccionado === d ? S.calCellSel : {}, cursor: items.length ? "pointer" : "default" }
+      },
+      /* @__PURE__ */ React.createElement("span", { style: S.calCellNum }, d),
+      items.length > 0 && /* @__PURE__ */ React.createElement("span", { style: { ...S.calDot, background: tieneProximo ? "#E08D3C" : "#7FA37A" } }, items.length)
+    );
+  }))), /* @__PURE__ */ React.createElement("div", { style: S.calSide }, /* @__PURE__ */ React.createElement("div", { style: S.calSideTitle }, diaSeleccionado ? `Vencen el ${diaSeleccionado} de ${MESES[m]}` : "Selecciona un d\xEDa con pagos"), seleccionadas.length === 0 && /* @__PURE__ */ React.createElement("div", { style: S.emptyText }, "Haz clic en un d\xEDa marcado del calendario para ver los pagos que vencen."), seleccionadas.map((d) => {
+    const info = ESTADO_INFO[estadoDeuda(d)];
+    return /* @__PURE__ */ React.createElement("div", { key: d.id, style: S.calItem, onClick: () => onEditar(d) }, /* @__PURE__ */ React.createElement("div", { style: S.calItemName }, d.nombre), /* @__PURE__ */ React.createElement("div", { style: { ...S.badge, color: info.color, background: info.bg } }, info.label), /* @__PURE__ */ React.createElement("div", { style: S.calItemAmt }, fmtCOP(restanteDe(d)), " pendiente"));
+  })));
 }
-
-// ---------- estilos ----------
 const FONT = { display: "'Fraunces', Georgia, serif", body: "'IBM Plex Sans', Inter, sans-serif", mono: "'IBM Plex Mono', monospace" };
-
 const GLOBAL_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 * { box-sizing: border-box; }
@@ -923,7 +569,6 @@ button:focus-visible { outline: 2px solid #C9A227; outline-offset: 2px; }
 ::placeholder { color: #6E6252; }
 @media (max-width: 720px) { .cal-wrap { grid-template-columns: 1fr !important; } }
 `;
-
 const S = {
   app: { minHeight: "100vh", background: "#171310", color: "#F0E6D2", fontFamily: FONT.body, padding: "20px 20px 60px" },
   loadingWrap: { minHeight: "100vh", background: "#171310", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 },
@@ -1007,11 +652,11 @@ const S = {
   calItemName: { fontSize: 13.5, fontWeight: 600, marginBottom: 4 },
   calItemAmt: { fontSize: 12, color: "#A89A82", marginTop: 4, fontFamily: FONT.mono },
   footer: { textAlign: "center", fontSize: 11.5, color: "#6E6252", marginTop: 30 },
-  adminFab: { position: "fixed", bottom: 18, right: 18, display: "flex", alignItems: "center", gap: 6, background: "#C9A227", color: "#171310", border: "none", padding: "10px 16px", borderRadius: 24, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.4)" },
+  adminFab: { position: "fixed", bottom: 18, right: 18, display: "flex", alignItems: "center", gap: 6, background: "#C9A227", color: "#171310", border: "none", padding: "10px 16px", borderRadius: 24, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.4)" }
 };
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App));
+
 </script>
 </body>
 </html>
