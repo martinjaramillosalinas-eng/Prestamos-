@@ -9,11 +9,11 @@
 <div id="root"></div>
 
 <!-- React y ReactDOM -->
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <!-- Firebase (almacenamiento compartido gratis) -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-app.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/8.10.1/firebase-firestore.min.js"></script>
 
 <!-- Este código ya viene traducido de antemano (sin Babel en vivo) -->
 <script>
@@ -45,6 +45,7 @@ const Percent = crearIcono("%");
 const ShieldCheck = crearIcono("\u{1F6E1}");
 const Users = crearIcono("\u{1F465}");
 const Lock = crearIcono("\u{1F512}");
+const RotateCcw = crearIcono("\u{1F501}");
 const firebaseConfig = {
   apiKey: "AIzaSyBvH9H8Ye-_B_znfnrHUiy1Kcc-zORZwUg",
   authDomain: "agenda-c749f.firebaseapp.com",
@@ -101,6 +102,12 @@ const daysUntil = (dateStr) => {
   const t = /* @__PURE__ */ new Date(todayISO() + "T00:00:00");
   return Math.round((d - t) / 864e5);
 };
+const sumarDias = (fechaISO, dias) => {
+  const d = /* @__PURE__ */ new Date(fechaISO + "T00:00:00");
+  d.setDate(d.getDate() + dias);
+  return d.toISOString().slice(0, 10);
+};
+const diasEntreFechas = (a, b) => Math.round((/* @__PURE__ */ new Date(b + "T00:00:00") - /* @__PURE__ */ new Date(a + "T00:00:00")) / 864e5);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const montoTotal = (d) => d.monto + d.monto * (d.tasa || 0) / 100;
 const abonadoDe = (d) => (d.abonos || []).reduce((a, b) => a + b.valor, 0);
@@ -383,6 +390,25 @@ function LibroDeVeta() {
     });
     setAbonoDe(null);
   };
+  const repetirPrestamo = (deuda) => {
+    const intervalo = diasEntreFechas(deuda.fechaPrestamo, deuda.fechaPago);
+    const dias = intervalo > 0 ? intervalo : 30;
+    const nuevaFechaPrestamo = deuda.fechaPago;
+    const nuevaFechaPago = sumarDias(deuda.fechaPago, dias);
+    setEditando({
+      nombre: deuda.nombre,
+      banco: deuda.banco,
+      cuenta: deuda.cuenta,
+      monto: deuda.monto,
+      tasa: deuda.tasa,
+      motivo: deuda.motivo,
+      fechaPrestamo: nuevaFechaPrestamo,
+      fechaPago: nuevaFechaPago,
+      notas: deuda.notas
+      // sin id ni abonos: al guardar queda como un préstamo nuevo e independiente
+    });
+    setModalAbierto(true);
+  };
   const lista = deudas || [];
   const recordatorios = useMemo(
     () => lista.filter((d) => restanteDe(d) > 0 && daysUntil(d.fechaPago) <= DIAS_AVISO).sort((a, b) => new Date(a.fechaPago) - new Date(b.fechaPago)),
@@ -420,7 +446,7 @@ function LibroDeVeta() {
   }, hasAny: lista.length > 0 }) : /* @__PURE__ */ React.createElement("div", { style: S.listWrap }, filtradas.map((d) => /* @__PURE__ */ React.createElement(DeudaCard, { key: d.id, deuda: d, onEditar: () => {
     setEditando(d);
     setModalAbierto(true);
-  }, onAbonar: () => setAbonoDe(d), onBorrar: () => setConfirmarBorrar(d) })))) : /* @__PURE__ */ React.createElement(VistaCalendario, { deudas: lista, mes: mesCalendario, setMes: setMesCalendario, diaSeleccionado, setDiaSeleccionado, onEditar: (d) => {
+  }, onAbonar: () => setAbonoDe(d), onBorrar: () => setConfirmarBorrar(d), onRepetir: () => repetirPrestamo(d) })))) : /* @__PURE__ */ React.createElement(VistaCalendario, { deudas: lista, mes: mesCalendario, setMes: setMesCalendario, diaSeleccionado, setDiaSeleccionado, onEditar: (d) => {
     setEditando(d);
     setModalAbierto(true);
   } }), modalAbierto && /* @__PURE__ */ React.createElement(ModalDeuda, { inicial: editando, onGuardar: upsertDeuda, onCerrar: () => {
@@ -431,7 +457,7 @@ function LibroDeVeta() {
 function EmptyState({ onAdd, hasAny }) {
   return /* @__PURE__ */ React.createElement("div", { style: S.empty }, /* @__PURE__ */ React.createElement(Coins, { size: 30, color: "#4A4032" }), /* @__PURE__ */ React.createElement("div", { style: S.emptyTitle }, hasAny ? "Nada coincide con ese filtro" : "Todav\xEDa no hay pr\xE9stamos registrados"), /* @__PURE__ */ React.createElement("div", { style: S.emptyText }, hasAny ? "Prueba cambiando la b\xFAsqueda o el filtro de estado." : "Registra el primero: a qui\xE9n, cu\xE1nto, a qu\xE9 % y para cu\xE1ndo."), !hasAny && /* @__PURE__ */ React.createElement("button", { style: S.addBtn, onClick: onAdd }, /* @__PURE__ */ React.createElement(Plus, { size: 16 }), " Nuevo pr\xE9stamo"));
 }
-function DeudaCard({ deuda, onEditar, onAbonar, onBorrar }) {
+function DeudaCard({ deuda, onEditar, onAbonar, onBorrar, onRepetir }) {
   const abonado = abonadoDe(deuda);
   const total = montoTotal(deuda);
   const restante = restanteDe(deuda);
@@ -444,7 +470,7 @@ function DeudaCard({ deuda, onEditar, onAbonar, onBorrar }) {
   else if (dias < 0) diasTexto = `Fecha era hace ${Math.abs(dias)} d\xEDa${Math.abs(dias) === 1 ? "" : "s"}`;
   else if (dias === 0) diasTexto = "Vence hoy";
   else diasTexto = `Vence en ${dias} d\xEDa${dias === 1 ? "" : "s"}`;
-  return /* @__PURE__ */ React.createElement("div", { style: S.card }, /* @__PURE__ */ React.createElement("div", { style: S.cardTop }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardName }, deuda.nombre), /* @__PURE__ */ React.createElement("div", { style: S.cardMeta }, deuda.motivo || "Sin concepto")), /* @__PURE__ */ React.createElement("div", { style: { ...S.badge, color: info.color, background: info.bg } }, info.label)), /* @__PURE__ */ React.createElement("div", { style: S.veta }, /* @__PURE__ */ React.createElement("div", { style: { ...S.vetaFill, width: `${pct}%` } })), /* @__PURE__ */ React.createElement("div", { style: S.vetaLabels }, /* @__PURE__ */ React.createElement("span", null, fmtCOP(abonado), " abonado"), /* @__PURE__ */ React.createElement("span", null, fmtCOP(restante), " pendiente de ", fmtCOP(total))), /* @__PURE__ */ React.createElement("div", { style: S.cardGrid }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Banco"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.banco || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "N\xFAmero de cuenta"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.cuenta || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Monto prestado / tasa"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, fmtCOP(deuda.monto), " \xB7 ", deuda.tasa || 0, "%")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Prestado el"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.fechaPrestamo)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Fecha de pago"), /* @__PURE__ */ React.createElement("div", { style: { ...S.cardValue, color: info.color, fontWeight: 600 } }, deuda.fechaPago, " \xB7 ", diasTexto))), deuda.notas && /* @__PURE__ */ React.createElement("div", { style: S.notas }, deuda.notas), /* @__PURE__ */ React.createElement("div", { style: S.cardActions }, est !== "pagado" && /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: onAbonar }, /* @__PURE__ */ React.createElement(Wallet, { size: 14 }), " Registrar abono"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onEditar }, /* @__PURE__ */ React.createElement(Pencil, { size: 14 }), " Editar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnDanger, onClick: onBorrar }, /* @__PURE__ */ React.createElement(Trash2, { size: 14 }), " Eliminar")));
+  return /* @__PURE__ */ React.createElement("div", { style: S.card }, /* @__PURE__ */ React.createElement("div", { style: S.cardTop }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardName }, deuda.nombre), /* @__PURE__ */ React.createElement("div", { style: S.cardMeta }, deuda.motivo || "Sin concepto")), /* @__PURE__ */ React.createElement("div", { style: { ...S.badge, color: info.color, background: info.bg } }, info.label)), /* @__PURE__ */ React.createElement("div", { style: S.veta }, /* @__PURE__ */ React.createElement("div", { style: { ...S.vetaFill, width: `${pct}%` } })), /* @__PURE__ */ React.createElement("div", { style: S.vetaLabels }, /* @__PURE__ */ React.createElement("span", null, fmtCOP(abonado), " abonado"), /* @__PURE__ */ React.createElement("span", null, fmtCOP(restante), " pendiente de ", fmtCOP(total))), /* @__PURE__ */ React.createElement("div", { style: S.cardGrid }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Banco"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.banco || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "N\xFAmero de cuenta"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.cuenta || "\u2014")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Monto prestado / tasa"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, fmtCOP(deuda.monto), " \xB7 ", deuda.tasa || 0, "%")), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Prestado el"), /* @__PURE__ */ React.createElement("div", { style: S.cardValue }, deuda.fechaPrestamo)), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.cardLabel }, "Fecha de pago"), /* @__PURE__ */ React.createElement("div", { style: { ...S.cardValue, color: info.color, fontWeight: 600 } }, deuda.fechaPago, " \xB7 ", diasTexto))), deuda.notas && /* @__PURE__ */ React.createElement("div", { style: S.notas }, deuda.notas), /* @__PURE__ */ React.createElement("div", { style: S.cardActions }, est !== "pagado" && /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: onAbonar }, /* @__PURE__ */ React.createElement(Wallet, { size: 14 }), " Registrar abono"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onRepetir }, /* @__PURE__ */ React.createElement(RotateCcw, { size: 14 }), " Repetir pr\xE9stamo"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onEditar }, /* @__PURE__ */ React.createElement(Pencil, { size: 14 }), " Editar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnDanger, onClick: onBorrar }, /* @__PURE__ */ React.createElement(Trash2, { size: 14 }), " Eliminar")));
 }
 function ModalDeuda({ inicial, onGuardar, onCerrar }) {
   const bancoInicial = (inicial == null ? void 0 : inicial.banco) || "";
@@ -483,7 +509,7 @@ function ModalDeuda({ inicial, onGuardar, onCerrar }) {
       abonos: (inicial == null ? void 0 : inicial.abonos) || []
     });
   };
-  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCerrar }, /* @__PURE__ */ React.createElement("div", { style: S.modal, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalHeader }, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, inicial ? "Editar pr\xE9stamo" : "Nuevo pr\xE9stamo"), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: onCerrar }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: S.formGrid }, /* @__PURE__ */ React.createElement(Field, { label: "Nombre de la persona *", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: nombre, onChange: (e) => setNombre(e.target.value), placeholder: "Ej. Carlos Ram\xEDrez" })), /* @__PURE__ */ React.createElement(Field, { label: "Banco" }, /* @__PURE__ */ React.createElement("select", { style: S.input, value: bancoSel, onChange: (e) => setBancoSel(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Selecciona un banco"), BANCOS_CO.map((b) => /* @__PURE__ */ React.createElement("option", { key: b, value: b }, b)))), /* @__PURE__ */ React.createElement(Field, { label: bancoSel === "Otro" ? "Nombre del banco" : "N\xFAmero de cuenta" }, bancoSel === "Otro" ? /* @__PURE__ */ React.createElement("input", { style: S.input, value: bancoOtro, onChange: (e) => setBancoOtro(e.target.value), placeholder: "Nombre del banco" }) : /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), bancoSel === "Otro" && /* @__PURE__ */ React.createElement(Field, { label: "N\xFAmero de cuenta", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), /* @__PURE__ */ React.createElement(Field, { label: "Monto prestado (COP) *" }, /* @__PURE__ */ React.createElement("input", { style: S.input, inputMode: "numeric", value: formatMiles(monto), onChange: (e) => setMonto(e.target.value.replace(/[^0-9]/g, "")), placeholder: "0" })), /* @__PURE__ */ React.createElement(Field, { label: "Tasa de inter\xE9s (%)" }, /* @__PURE__ */ React.createElement("div", { style: S.inputWithIcon }, /* @__PURE__ */ React.createElement("input", { style: S.inputBare, value: tasa, onChange: (e) => setTasa(e.target.value.replace(/[^0-9.]/g, "")), placeholder: "0", inputMode: "decimal" }), /* @__PURE__ */ React.createElement(Percent, { size: 14, color: "#A89A82" }))), /* @__PURE__ */ React.createElement(Field, { label: "Motivo / concepto", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: motivo, onChange: (e) => setMotivo(e.target.value), placeholder: "\xBFPara qu\xE9 se prest\xF3?" })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha del pr\xE9stamo" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPrestamo, onChange: (e) => setFechaPrestamo(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha de pago *" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPago, onChange: (e) => setFechaPago(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Notas", span: 2 }, /* @__PURE__ */ React.createElement("textarea", { style: { ...S.input, minHeight: 70, resize: "vertical" }, value: notas, onChange: (e) => setNotas(e.target.value), placeholder: "Detalles adicionales" }))), montoNum > 0 && /* @__PURE__ */ React.createElement("div", { style: S.previewBox }, "Total a pagar con el ", tasaNum || 0, "%: ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#F0E6D2" } }, fmtCOP(totalPreview))), err && /* @__PURE__ */ React.createElement("div", { style: S.formError }, err), /* @__PURE__ */ React.createElement("div", { style: S.modalActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onCerrar }, "Cancelar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: guardar }, /* @__PURE__ */ React.createElement(Check, { size: 15 }), " Guardar"))));
+  return /* @__PURE__ */ React.createElement("div", { style: S.overlay, onClick: onCerrar }, /* @__PURE__ */ React.createElement("div", { style: S.modal, onClick: (e) => e.stopPropagation() }, /* @__PURE__ */ React.createElement("div", { style: S.modalHeader }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { style: S.modalTitle }, (inicial == null ? void 0 : inicial.id) ? "Editar pr\xE9stamo" : "Nuevo pr\xE9stamo"), inicial && !inicial.id && /* @__PURE__ */ React.createElement("div", { style: S.accessText }, "Repitiendo datos de un pr\xE9stamo anterior \u2014 revisa la fecha antes de guardar.")), /* @__PURE__ */ React.createElement("button", { style: S.iconBtn, onClick: onCerrar }, /* @__PURE__ */ React.createElement(X, { size: 18 }))), /* @__PURE__ */ React.createElement("div", { style: S.formGrid }, /* @__PURE__ */ React.createElement(Field, { label: "Nombre de la persona *", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: nombre, onChange: (e) => setNombre(e.target.value), placeholder: "Ej. Carlos Ram\xEDrez" })), /* @__PURE__ */ React.createElement(Field, { label: "Banco" }, /* @__PURE__ */ React.createElement("select", { style: S.input, value: bancoSel, onChange: (e) => setBancoSel(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "Selecciona un banco"), BANCOS_CO.map((b) => /* @__PURE__ */ React.createElement("option", { key: b, value: b }, b)))), /* @__PURE__ */ React.createElement(Field, { label: bancoSel === "Otro" ? "Nombre del banco" : "N\xFAmero de cuenta" }, bancoSel === "Otro" ? /* @__PURE__ */ React.createElement("input", { style: S.input, value: bancoOtro, onChange: (e) => setBancoOtro(e.target.value), placeholder: "Nombre del banco" }) : /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), bancoSel === "Otro" && /* @__PURE__ */ React.createElement(Field, { label: "N\xFAmero de cuenta", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: cuenta, onChange: (e) => setCuenta(e.target.value), placeholder: "Ej. Ahorros 123-456789-00" })), /* @__PURE__ */ React.createElement(Field, { label: "Monto prestado (COP) *" }, /* @__PURE__ */ React.createElement("input", { style: S.input, inputMode: "numeric", value: formatMiles(monto), onChange: (e) => setMonto(e.target.value.replace(/[^0-9]/g, "")), placeholder: "0" })), /* @__PURE__ */ React.createElement(Field, { label: "Tasa de inter\xE9s (%)" }, /* @__PURE__ */ React.createElement("div", { style: S.inputWithIcon }, /* @__PURE__ */ React.createElement("input", { style: S.inputBare, value: tasa, onChange: (e) => setTasa(e.target.value.replace(/[^0-9.]/g, "")), placeholder: "0", inputMode: "decimal" }), /* @__PURE__ */ React.createElement(Percent, { size: 14, color: "#A89A82" }))), /* @__PURE__ */ React.createElement(Field, { label: "Motivo / concepto", span: 2 }, /* @__PURE__ */ React.createElement("input", { style: S.input, value: motivo, onChange: (e) => setMotivo(e.target.value), placeholder: "\xBFPara qu\xE9 se prest\xF3?" })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha del pr\xE9stamo" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPrestamo, onChange: (e) => setFechaPrestamo(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Fecha de pago *" }, /* @__PURE__ */ React.createElement("input", { type: "date", style: S.input, value: fechaPago, onChange: (e) => setFechaPago(e.target.value) })), /* @__PURE__ */ React.createElement(Field, { label: "Notas", span: 2 }, /* @__PURE__ */ React.createElement("textarea", { style: { ...S.input, minHeight: 70, resize: "vertical" }, value: notas, onChange: (e) => setNotas(e.target.value), placeholder: "Detalles adicionales" }))), montoNum > 0 && /* @__PURE__ */ React.createElement("div", { style: S.previewBox }, "Total a pagar con el ", tasaNum || 0, "%: ", /* @__PURE__ */ React.createElement("strong", { style: { color: "#F0E6D2" } }, fmtCOP(totalPreview))), err && /* @__PURE__ */ React.createElement("div", { style: S.formError }, err), /* @__PURE__ */ React.createElement("div", { style: S.modalActions }, /* @__PURE__ */ React.createElement("button", { style: S.actionBtn, onClick: onCerrar }, "Cancelar"), /* @__PURE__ */ React.createElement("button", { style: S.actionBtnPrimary, onClick: guardar }, /* @__PURE__ */ React.createElement(Check, { size: 15 }), " Guardar"))));
 }
 function ModalAbono({ deuda, onGuardar, onCerrar }) {
   const restante = restanteDe(deuda);
@@ -654,9 +680,9 @@ const S = {
   footer: { textAlign: "center", fontSize: 11.5, color: "#6E6252", marginTop: 30 },
   adminFab: { position: "fixed", bottom: 18, right: 18, display: "flex", alignItems: "center", gap: 6, background: "#C9A227", color: "#171310", border: "none", padding: "10px 16px", borderRadius: 24, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 4px 14px rgba(0,0,0,0.4)" }
 };
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App));
-
 </script>
 </body>
 </html>
